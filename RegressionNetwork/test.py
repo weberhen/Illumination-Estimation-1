@@ -16,20 +16,20 @@ from gmloss import SamplesLoss
 import imageio
 imageio.plugins.freeimage.download()
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 h = PanoramaHandler()
 batch_size = 1
 
 save_dir = "./checkpoints"
-test_dir = '/home/fangneng.zfn/datasets/LavalIndoor/test/'
-hdr_train_dataset = data.ParameterDataset(train_dir)
+test_dir = '/root/datasets_ssd/LavalIndoor/1942x971/test/'
+hdr_train_dataset = data.ParameterDataset(test_dir)
 dataloader = DataLoader(hdr_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 Model = DenseNet.DenseNet().to(device)
 load_weight = True
 if load_weight:
-    Model.load_state_dict(torch.load("./checkpoints/latest_net.pth"))
+    Model.load_state_dict(torch.load("latest_net.pth"))
     print ('load trained model')
 tone = util.TonemapHDR(gamma=2.4, percentile=99, max_mapping=0.9)
 
