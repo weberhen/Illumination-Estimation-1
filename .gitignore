@@ -1,1 +1,7 @@
 *.pth
+*.jpg
+*.pickle
+*.exr
+*.pkl
+*.txt
+*.pyc
