@@ -223,7 +223,7 @@ def convert_to_panorama(dirs, sizes, colors):
     x = torch.sin(grid_latitude) * torch.cos(grid_longitude)
     y = torch.sin(grid_latitude) * torch.sin(grid_longitude)
     z = torch.cos(grid_latitude)
-    xyz =  torch.stack((x, y, z)).cuda()
+    xyz =  torch.stack((x, y, z))
 
     nbatch = colors.shape[0]
     lights = torch.zeros((nbatch, 3, 128, 256), dtype=dirs.dtype, device=dirs.device)

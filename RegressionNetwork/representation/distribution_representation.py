@@ -128,7 +128,7 @@ sv_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/'
 # crop_dir = bs_dir + 'tpami cxd'
 nms = os.listdir(hdr_dir)
 # nms = nms[:100]
-ln = 128
+ln = 42
 
 # remove sv_dir if exist
 if os.path.exists(sv_dir):
