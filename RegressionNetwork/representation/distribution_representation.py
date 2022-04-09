@@ -1,4 +1,5 @@
 import cv2
+from matplotlib.pyplot import sci
 import numpy as np
 from PIL import Image
 import pickle
@@ -7,7 +8,8 @@ import imageio
 import vtk
 from vtk.util import numpy_support
 import torch
-import detect_util
+# import detect_util
+import scipy.ndimage
 import util
 
 imageio.plugins.freeimage.download()
@@ -121,13 +123,17 @@ class extract_mesh():
 
 
 # train_dir = '/home/fangneng.zfn/datasets/LavalIndoor/nips/'
-bs_dir = '/home/fangneng.zfn/datasets/LavalIndoor/'
-hdr_dir = bs_dir + 'marc/warpedHDROutputs/'
-sv_dir = bs_dir + 'pkl/'
+hdr_dir = '/root/datasets_ssd/LavalIndoor/1942x971/test/'
+sv_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/'
 # crop_dir = bs_dir + 'tpami cxd'
 nms = os.listdir(hdr_dir)
 # nms = nms[:100]
-ln = 128
+ln = 42
+
+# remove sv_dir if exist
+if os.path.exists(sv_dir):
+    os.system('rm -rf {}'.format(sv_dir))
+os.system('mkdir -p {}'.format(sv_dir))
 
 extractor = extract_mesh(ln=ln)
 
@@ -139,6 +145,8 @@ for nm in nms:
 
         h = util.PanoramaHandler()
         hdr = h.read_exr(hdr_path)
+        zoom_ratio = 128 / hdr.shape[0]
+        hdr = scipy.ndimage.zoom(hdr, (zoom_ratio, zoom_ratio, 1), order=0)
         para, map = extractor.compute(hdr)
 
         with open((sv_dir + os.path.basename(hdr_path).replace('exr', 'pickle')), 'wb') as handle:

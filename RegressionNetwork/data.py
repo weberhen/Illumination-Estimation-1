@@ -20,8 +20,9 @@ class ParameterDataset(Dataset):
         # self.train_dir = train_dir
         self.pairs = []
 
-        gt_dir = train_dir + 'pkl/'
-        crop_dir = train_dir + 'crop/'
+        # gt_dir = train_dir + 'pkl/'
+        gt_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/'
+        crop_dir = '/root/datasets_ssd/LavalIndoor/crops_hdr/test/'
 
         gt_nms = os.listdir(gt_dir)
         for nm in gt_nms:
@@ -46,7 +47,7 @@ class ParameterDataset(Dataset):
             'intensity': None,
             'rgb_ratio': None,
             'ambient': None,
-            'depth': None,
+            # 'depth': None,
             'name': None}
 
         pair = self.pairs[index]
@@ -64,7 +65,7 @@ class ParameterDataset(Dataset):
         training_pair['intensity'] = torch.from_numpy(np.array(gt['intensity'])).float() * alpha / 500
         training_pair['rgb_ratio'] = torch.from_numpy(gt['rgb_ratio']).float()
         training_pair['ambient'] = torch.from_numpy(gt['ambient']).float() * alpha / (128 * 256)
-        training_pair['depth'] = torch.from_numpy(gt['depth']).float()
+        # training_pair['depth'] = torch.from_numpy(gt['depth']).float()
 
         training_pair['name'] = gt_path.split('/')[-1].split('.pickle')[0]
 

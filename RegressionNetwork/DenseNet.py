@@ -139,16 +139,16 @@ class DenseNet(nn.Module):
         out = self.fc(out)
 
         dist_pred = self.fc_dist(out)
-        # dist_pred = self.sigmoid(dist_pred)
+        dist_pred = self.sigmoid(dist_pred)
 
         intenstiy_pred = self.fc_intensity(out)
-        # intenstiy_pred = self.relu(intenstiy_pred)
+        intenstiy_pred = self.relu(intenstiy_pred)
 
         rgb_ratio_pred = self.fc_rgb_ratio(out)
-        # rgb_ratio_pred = self.sigmoid(rgb_ratio_pred)
+        rgb_ratio_pred = self.sigmoid(rgb_ratio_pred)
 
         ambient_pred = self.fc_ambient(out)
-        # ambient_pred = self.relu(ambient_pred)
+        ambient_pred = self.relu(ambient_pred)
 
         return {'distribution': dist_pred,
                 'intensity': intenstiy_pred,
