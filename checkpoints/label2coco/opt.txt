@@ -9,7 +9,7 @@
    contain_dontcare_label: False                         
            continue_train: False                         
                 crop_size: 256                           
-                 dataroot: /home/fangneng.zfn/datasets/LavalIndoor/nips/
+                 dataroot: /root/datasets_ssd/LavalIndoor/emlight/
              dataset_mode: coco                          
                     debug: False                         
              display_freq: 1000                          
