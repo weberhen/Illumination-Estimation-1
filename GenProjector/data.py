@@ -3,6 +3,7 @@ Copyright (C) 2019 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
 import os
+import random
 import importlib
 import torch.utils.data
 import numpy as np
@@ -10,7 +11,8 @@ import pickle
 import cv2
 from PIL import Image
 import util
-
+import scipy
+import envmap
 
 class LavalIndoorDataset():
 
@@ -38,8 +40,7 @@ class LavalIndoorDataset():
         return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
     def get_paths(self, opt):
-        # if opt.phase == 'train':
-        dir = 'pkl/'
+        dir = '/emlight/pkl/train/'
         pkl_dir = opt.dataroot + dir
         pairs = []
         nms = os.listdir(pkl_dir)
@@ -47,7 +48,7 @@ class LavalIndoorDataset():
         for nm in nms:
             if nm.endswith('.pickle'):
                 pkl_path = pkl_dir + nm
-                warped_path = pkl_path.replace(dir, 'warped/')
+                warped_path = pkl_path.replace(dir, '1942x971/train/')
                 # warped_path = pkl_path.replace(dir, 'test/')
                 warped_path = warped_path.replace('pickle', 'exr')
                 # print (warped_path)
@@ -56,8 +57,9 @@ class LavalIndoorDataset():
         return pairs
 
     def __getitem__(self, index):
-
-        ln = 128
+        # pick random index between 0 and 10
+        index = random.randint(0, len(self.pairs) - 1)
+        ln = 42
         # read .exr image
         pkl_path, warped_path = self.pairs[index]
 
@@ -65,12 +67,41 @@ class LavalIndoorDataset():
         pkl = pickle.load(handle)
 
         crop_path = warped_path.replace('warped', 'crop')
-        crop = util.load_exr(crop_path)
-        crop, alpha = self.tone(crop)
+        envmap_exr = util.load_exr(crop_path)
+        envmap_data = envmap.EnvironmentMap(envmap_exr, 'latlong')
+
+        elevationDistribution = [-0.2, 0.2, 0.7]
+        fovDistribution = [45, 52, 60]
+        cropHeight = 192
+        gamma = 1/2.4
+
+        np.random.seed(int.from_bytes(os.urandom(4), byteorder='little'))
+        elevation = np.random.triangular(elevationDistribution[0],
+                                        elevationDistribution[1],
+                                        elevationDistribution[2])
+        azimuth = np.random.uniform(0, 2*np.pi)
+        vfov = np.random.triangular(fovDistribution[0],
+                                    fovDistribution[1],
+                                    fovDistribution[2])
+        
+        crop = util.extractImage(envmap_data.data, [elevation, azimuth], cropHeight, vfov=vfov, ratio=1.0)
+        crop, alpha = util.genLDRimage(crop, putMedianIntensityAt=0.45, returnIntensityMultiplier=True, gamma=gamma)
+        
         crop = cv2.resize(crop, (128, 128))
         crop = torch.from_numpy(crop).float().cuda().permute(2, 0, 1)
 
-        hdr = util.load_exr(warped_path)
+        # rotate the envmap too
+        elevation = 0 # we don't want to change the elevation
+        rotation_matrix_azimuth = envmap.rotation_matrix(azimuth=-azimuth, elevation=0)
+        rotation_matrix_elevation = envmap.rotation_matrix(azimuth=0, elevation=-elevation)
+
+        # apply the rotation to the envmap
+        envmap_rotated = envmap_data.rotate('DCM', rotation_matrix_azimuth).rotate('DCM', rotation_matrix_elevation)
+        hdr = envmap_rotated.data
+
+        # resize to 128x256
+        zoom_ratio = 128 / hdr.shape[0]
+        hdr = scipy.ndimage.zoom(hdr, (zoom_ratio, zoom_ratio, 1), order=0).astype(np.float32)
 
         hdr_intensity = 0.3 * hdr[..., 0] + 0.59 * hdr[..., 1] + 0.11 * hdr[..., 2]
         max_intensity_ind = np.unravel_index(np.argmax(hdr_intensity, axis=None), hdr_intensity.shape)
@@ -97,6 +128,9 @@ class LavalIndoorDataset():
         size = torch.ones((1, ln)).cuda().float() * 0.0025
         light_gt = (dist_gt * intensity_gt * rgb_ratio_gt).view(1, ln * 3)
         env_gt = util.convert_to_panorama(dirs, size, light_gt)
+        env_gt = envmap.EnvironmentMap(env_gt.cpu().numpy()[0].transpose(1,2,0), 'latlong')
+        env_gt = env_gt.rotate('DCM', rotation_matrix_azimuth).rotate('DCM', rotation_matrix_elevation)
+        env_gt = torch.from_numpy(env_gt.data.transpose(2,0,1)).float().cuda().unsqueeze(0)
         ambient_gt = ambient_gt.view(3, 1, 1).repeat(1, 128, 256).cuda()
         env_gt = env_gt.view(3, 128, 256) + ambient_gt
         env_gt = env_gt * alpha

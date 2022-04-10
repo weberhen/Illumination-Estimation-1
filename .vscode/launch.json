@@ -9,7 +9,36 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [   
+                "--name", "lavalindoor",
+                "--dataset_mode", "lavalindoor",
+                "--dataroot", "/root/datasets_ssd/LavalIndoor/",
+                "--display_freq", "100",
+                "--batchSize", "4",
+                "--niter", "100",
+                "--niter_decay", "100",
+                "--gpu_ids", "0,1",
+                // "--continue_train",
+                "--lr", "0.001",
+            ] //train
+            // "args": [   // TEXTURE NETWORK TEST
+            //     "--label_nc", "0", 
+            //     "--no_instance", 
+            //     "--loadSize", "128",
+            //     "--fineSize", "128",
+            //     "--name", "experiment",
+            //     "--dataroot", "/root/datasets_raid/envmapnet/lavalindoor/",
+            //     "--nThreads", "1",
+            //     "--batchSize", "1",
+            //     "--serial_batches", 
+            //     "--no_flip", 
+            //     "--which_epoch", "latest",
+            //     "--results_dir", "checkpoints",
+            //     "--how_many", "10000",
+            //     "--checkpoints_dir", "checkpoints",
+            //     "--resize_or_crop", "none",
+            //     ] // test
         }
     ]
 }

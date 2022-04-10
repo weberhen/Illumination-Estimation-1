@@ -10,60 +10,73 @@ from iter_counter import IterationCounter
 from model_trainer import Trainer
 import data
 import util
+import torch
+import os
 
-# parse options
-opt = TrainOptions().parse()
+def main():
+    # parse options
+    opt = TrainOptions().parse()
 
-# load the dataset
-dataloader = data.create_dataloader(opt)
+    # if summary folder exists, delete it
+    if os.path.exists('summary'):
+        os.system('rm -rf summary')        
+    # create new summary folder
+    os.system('mkdir summary')
 
-# create trainer for our model
-trainer = Trainer(opt)
+    # load the dataset
+    dataloader = data.create_dataloader(opt)
 
-# create tool for counting iterations
-iter_counter = IterationCounter(opt, len(dataloader))
+    # create trainer for our model
+    trainer = Trainer(opt)
 
-for epoch in iter_counter.training_epochs():
-    iter_counter.record_epoch_start(epoch)
-    for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
-        iter_counter.record_one_iteration()
+    # create tool for counting iterations
+    iter_counter = IterationCounter(opt, len(dataloader))
 
-        # Training
-        # train generator
-        if i % opt.D_steps_per_G == 0:
-            trainer.run_generator_one_step(data_i)
+    for epoch in iter_counter.training_epochs():
+        iter_counter.record_epoch_start(epoch)
+        for i, data_i in enumerate(dataloader, start=iter_counter.epoch_iter):
+            iter_counter.record_one_iteration()
 
-        # train discriminator
-        trainer.run_discriminator_one_step(data_i)
+            # Training
+            # train generator
+            if i % opt.D_steps_per_G == 0:
+                trainer.run_generator_one_step(data_i)
 
-        # Visualizations
-        if iter_counter.needs_printing():
-            losses = trainer.get_latest_losses()
-            util.print_current_errors(epoch, iter_counter.epoch_iter,
-                                            losses, iter_counter.time_per_iter)
-            # visualizer.plot_current_errors(losses, iter_counter.total_steps_so_far)
+            # train discriminator
+            trainer.run_discriminator_one_step(data_i)
 
-        if iter_counter.needs_displaying():
-            images = OrderedDict([('input', data_i['input'][0]),
-                                   ('fake_image', trainer.get_latest_generated()[0]),
-                                   ('warped', data_i['warped'][0]),
-                                   ('im', data_i['crop'][0])])
-            util.save_current_images(images, epoch, iter_counter.total_steps_so_far)
+            # Visualizations
+            if iter_counter.needs_printing():
+                losses = trainer.get_latest_losses()
+                util.print_current_errors(epoch, iter_counter.epoch_iter,
+                                                losses, iter_counter.time_per_iter)
+                # visualizer.plot_current_errors(losses, iter_counter.total_steps_so_far)
 
-        if iter_counter.needs_saving():
-            print('saving the latest model (epoch %d, total_steps %d)' %
-                  (epoch, iter_counter.total_steps_so_far))
+            if iter_counter.needs_displaying():
+                images = OrderedDict([('input', data_i['input'][0]),
+                                    ('fake_image', trainer.get_latest_generated()[0]),
+                                    ('warped', data_i['warped'][0]),
+                                    ('im', data_i['crop'][0])])
+                util.save_current_images(images, epoch, iter_counter.total_steps_so_far)
+
+            if iter_counter.needs_saving():
+                print('saving the latest model (epoch %d, total_steps %d)' %
+                    (epoch, iter_counter.total_steps_so_far))
+                trainer.save('latest')
+                iter_counter.record_current_iter()
+
+        trainer.update_learning_rate(epoch)
+        iter_counter.record_epoch_end()
+
+        if epoch % opt.save_epoch_freq == 0 or \
+        epoch == iter_counter.total_epochs:
+            print('saving the model at the end of epoch %d, iters %d' %
+                (epoch, iter_counter.total_steps_so_far))
             trainer.save('latest')
-            iter_counter.record_current_iter()
+            trainer.save(epoch)
 
-    trainer.update_learning_rate(epoch)
-    iter_counter.record_epoch_end()
+    print('Training was successfully finished.')
 
-    if epoch % opt.save_epoch_freq == 0 or \
-       epoch == iter_counter.total_epochs:
-        print('saving the model at the end of epoch %d, iters %d' %
-              (epoch, iter_counter.total_steps_so_far))
-        trainer.save('latest')
-        trainer.save(epoch)
-
-print('Training was successfully finished.')
+if __name__ == '__main__':
+    torch.multiprocessing.set_start_method('spawn')# good solution !!!!
+    main()

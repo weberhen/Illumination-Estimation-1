@@ -5,7 +5,6 @@ import cv2
 from scipy import interpolate
 import torch
 
-
 class TonemapHDR(object):
     """
         Tonemap HDR image globally. First, we find alpha that maps the (max(numpy_img) * percentile) to max_mapping.
