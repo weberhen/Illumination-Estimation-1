@@ -4,6 +4,8 @@ Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses
 """
 
 import os
+# use gpu 0
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 from collections import OrderedDict
 
 import data

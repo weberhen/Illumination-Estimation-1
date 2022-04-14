@@ -40,7 +40,7 @@ class LavalIndoorDataset():
         return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
     def get_paths(self, opt):
-        dir = '/emlight/pkl/train/'
+        dir = '/emlight/pkl/traub/'
         pkl_dir = opt.dataroot + dir
         pairs = []
         nms = os.listdir(pkl_dir)
@@ -48,7 +48,7 @@ class LavalIndoorDataset():
         for nm in nms:
             if nm.endswith('.pickle'):
                 pkl_path = pkl_dir + nm
-                warped_path = pkl_path.replace(dir, '1942x971/train/')
+                warped_path = pkl_path.replace(dir, '256x128/train/')
                 # warped_path = pkl_path.replace(dir, 'test/')
                 warped_path = warped_path.replace('pickle', 'exr')
                 # print (warped_path)
@@ -58,7 +58,7 @@ class LavalIndoorDataset():
 
     def __getitem__(self, index):
         # pick random index between 0 and 10
-        index = random.randint(0, len(self.pairs) - 1)
+        # index = random.randint(0, 80)
         ln = 42
         # read .exr image
         pkl_path, warped_path = self.pairs[index]
@@ -83,7 +83,9 @@ class LavalIndoorDataset():
         vfov = np.random.triangular(fovDistribution[0],
                                     fovDistribution[1],
                                     fovDistribution[2])
-        
+        # azimuth =0
+        # elevation = 0
+        # vfov = 60
         crop = util.extractImage(envmap_data.data, [elevation, azimuth], cropHeight, vfov=vfov, ratio=1.0)
         crop, alpha = util.genLDRimage(crop, putMedianIntensityAt=0.45, returnIntensityMultiplier=True, gamma=gamma)
         

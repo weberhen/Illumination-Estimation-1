@@ -10,13 +10,17 @@ from iter_counter import IterationCounter
 from model_trainer import Trainer
 import data
 import util
-import torch
 import os
+# use only gpu 1
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+import torch
+from visualizer import Visualizer
+
 
 def main():
     # parse options
     opt = TrainOptions().parse()
-
+    visualizer = Visualizer(opt)
     # if summary folder exists, delete it
     if os.path.exists('summary'):
         os.system('rm -rf summary')        
@@ -56,8 +60,13 @@ def main():
                 images = OrderedDict([('input', data_i['input'][0]),
                                     ('fake_image', trainer.get_latest_generated()[0]),
                                     ('warped', data_i['warped'][0]),
-                                    ('im', data_i['crop'][0])])
+                                    ('im', data_i['crop'][0])]) 
                 util.save_current_images(images, epoch, iter_counter.total_steps_so_far)
+                # visuals = OrderedDict([('input', util.tonemapping(data_i['input'][0], "")),
+                #                     ('fake_image', trainer.get_latest_generated()[0]),
+                #                     ('warped', data_i['warped'][0]),
+                #                     ('im', data_i['crop'][0])]) 
+                # visualizer.display_current_results(visuals, epoch, iter_counter.training_epochs())
 
             if iter_counter.needs_saving():
                 print('saving the latest model (epoch %d, total_steps %d)' %
