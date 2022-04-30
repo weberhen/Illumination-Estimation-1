@@ -22,7 +22,7 @@ dataloader = data.create_dataloader(opt)
 
 model = Pix2PixModel(opt)
 model.eval()
-
+os.makedirs(opt.results_dir)
 for i, data_i in enumerate(dataloader):
     if i * opt.batchSize >= 1000:
         break
@@ -38,5 +38,5 @@ for i, data_i in enumerate(dataloader):
                                   ('warped', data_i['warped'][b]),
                                   ('im', data_i['crop'][b])])
 
-            util.save_test_images(images, nm[b])
+            util.save_test_images(images, nm[b], opt.results_dir)
         print (i)

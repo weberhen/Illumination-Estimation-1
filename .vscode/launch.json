@@ -28,7 +28,8 @@
                 "--checkpoints_dir", "checkpoints",
                 "--dataset_mode", "lavalindoor",
                 "--dataroot", "/root/datasets_ssd/LavalIndoor/",
-                "--which_epoch", "latest",
+                "--which_epoch", "700",
+                "--results_dir", "epooch_700",
                 ] // test
         }
     ]

@@ -123,8 +123,8 @@ class extract_mesh():
 
 
 # train_dir = '/home/fangneng.zfn/datasets/LavalIndoor/nips/'
-hdr_dir = '/root/datasets_ssd/LavalIndoor/1942x971/valid/'
-sv_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/valid/'
+hdr_dir = '/root/datasets_raid/LavalIndoor/1942x971/test/'
+sv_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/test/'
 # crop_dir = bs_dir + 'tpami cxd'
 nms = os.listdir(hdr_dir)
 # nms = nms[:100]
