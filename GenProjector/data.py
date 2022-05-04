@@ -40,7 +40,7 @@ class LavalIndoorDataset():
         return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
     def get_paths(self, opt):
-        dir = '/emlight/pkl/'+opt.phase+'/'
+        dir = '/emlight/pkl_RegressionNetwork/'+opt.phase+'/'
         pkl_dir = opt.dataroot + dir
         pairs = []
         nms = sorted(os.listdir(pkl_dir))

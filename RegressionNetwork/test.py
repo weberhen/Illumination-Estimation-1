@@ -21,9 +21,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 h = PanoramaHandler()
 batch_size = 1
 
-save_dir = "./checkpoints"
-test_dir = '/root/datasets_raid/LavalIndoor/1942x971/train/'
-hdr_train_dataset = data.ParameterDataset(test_dir)
+test_dir = '/root/datasets_raid/LavalIndoor/1942x971/'
+gt_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/'
+crop_dir = '/root/datasets_ssd/LavalIndoor/crops_hdr/'
+phase = 'test'
+hdr_train_dataset = data.ParameterDataset(os.path.join(test_dir, phase), os.path.join(gt_dir, phase), os.path.join(crop_dir, phase))
 dataloader = DataLoader(hdr_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
 device = torch.device("cpu")
@@ -41,11 +43,11 @@ tone = util.TonemapHDR(gamma=2.4, percentile=99, max_mapping=0.9)
 # torch.set_grad_enabled(True)
 # Model.test()
 
-output_folder = './results/'
+output_folder = os.path.join('/root/datasets_ssd/LavalIndoor/emlight/pkl_RegressionNetwork/', phase)
 # remove output folder if it exists
-if os.path.exists(output_folder):
-    os.system('rm -rf {}'.format(output_folder))
-os.makedirs(output_folder)
+# if os.path.exists(output_folder):
+#     os.system('rm -rf {}'.format(output_folder))
+os.makedirs(output_folder, exist_ok=True)
 
 output_folder_panos = './summary/'
 # remove output folder if it exists
@@ -75,6 +77,9 @@ for i, para in enumerate(dataloader):
     intensity_pred = pred['intensity'] * 500
     intensity_gt = para['intensity'].to(device) * 500
 
+    ambient_pred = pred['ambient']
+    ambient_gt = para['ambient'].to(device)
+
     dirs = util.sphere_points(ln)
     dirs = torch.from_numpy(dirs).float()
     dirs = dirs.view(1, ln * 3)
@@ -99,9 +104,10 @@ for i, para in enumerate(dataloader):
     rgb_ratio = np.squeeze(rgb_ratio_pred[0].view(3).detach().cpu().numpy())
     intensity = np.squeeze(intensity_pred[0].detach().cpu().numpy())
     distribution = np.squeeze(distribution_pred[0].view(ln).detach().cpu().numpy())
-    parametric_lights = {"distribution": distribution, "rgb_ratio": rgb_ratio, 'intensity': intensity}
+    ambient = np.squeeze(ambient_pred[0].detach().cpu().numpy())
+    parametric_lights = {"distribution": distribution, "rgb_ratio": rgb_ratio, 'intensity': intensity, 'ambient': ambient}
     
-    with open(output_folder + nm + '.pickle', 'wb') as handle:
+    with open(os.path.join(output_folder, nm + '.pickle'), 'wb') as handle:
         pickle.dump(parametric_lights, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 

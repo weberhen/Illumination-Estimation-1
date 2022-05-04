@@ -14,21 +14,16 @@ import shutil
 
 
 class ParameterDataset(Dataset):
-    def __init__(self, train_dir):
+    def __init__(self, train_dir, gt_dir, crop_dir):
         assert os.path.exists(train_dir)
 
-        # self.train_dir = train_dir
         self.pairs = []
-
-        # gt_dir = train_dir + 'pkl/'
-        gt_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/train/'
-        crop_dir = '/root/datasets_ssd/LavalIndoor/crops_hdr/train/'
 
         gt_nms = os.listdir(gt_dir)
         for nm in gt_nms:
             if nm.endswith('pickle'):
-                gt_path = gt_dir + nm
-                crop_path = crop_dir + nm.replace('pickle', 'exr')
+                gt_path = os.path.join(gt_dir, nm)
+                crop_path = os.path.join(crop_dir, nm.replace('pickle', 'exr'))
                 if os.path.exists(crop_path):
                     self.pairs.append([crop_path, gt_path])
         # self.pairs = self.pairs[: 1000]
