@@ -11,16 +11,14 @@ from model_trainer import Trainer
 import data
 import util
 import os
-# use only gpu 1
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch
-from visualizer import Visualizer
+# from visualizer import Visualizer
 
 
 def main():
     # parse options
     opt = TrainOptions().parse()
-    visualizer = Visualizer(opt)
+    # visualizer = Visualizer(opt)
     # if summary folder exists, delete it
     if os.path.exists('summary'):
         os.system('rm -rf summary')        
