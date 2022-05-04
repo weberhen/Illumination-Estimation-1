@@ -16,8 +16,9 @@ import envmap
 
 class LavalIndoorDataset():
 
-    def __init__(self, opt):
+    def __init__(self, opt, curr_index = 0):
         self.opt = opt
+        self.curr_index = curr_index
         self.pairs = self.get_paths(opt)
 
         size = len(self.pairs)
@@ -62,7 +63,8 @@ class LavalIndoorDataset():
         ln = 42
         # read .exr image
         pkl_path, warped_path = self.pairs[index]
-
+        i = self.curr_index
+        crops_per_pano = 10
         handle = open(pkl_path, 'rb')
         pkl = pickle.load(handle)
 
@@ -76,16 +78,18 @@ class LavalIndoorDataset():
         gamma = 1/2.4
 
         np.random.seed(int.from_bytes(os.urandom(4), byteorder='little'))
-        elevation = np.random.triangular(elevationDistribution[0],
-                                        elevationDistribution[1],
-                                        elevationDistribution[2])
-        azimuth = np.random.uniform(0, 2*np.pi)
-        vfov = np.random.triangular(fovDistribution[0],
-                                    fovDistribution[1],
-                                    fovDistribution[2])
-        # azimuth =0
-        # elevation = 0
-        # vfov = 60
+        if self.opt.phase == 'train':
+            elevation = np.random.triangular(elevationDistribution[0],
+                                            elevationDistribution[1],
+                                            elevationDistribution[2])
+            azimuth = np.random.uniform(0, 2*np.pi)
+            vfov = np.random.triangular(fovDistribution[0],
+                                        fovDistribution[1],
+                                        fovDistribution[2])
+        else:
+            elevation = 0
+            azimuth = i * 2 * np.pi / crops_per_pano
+            vfov = 50
         crop = util.extractImage(envmap_data.data, [elevation, azimuth], cropHeight, vfov=vfov, ratio=1.0)
         crop, alpha = util.genLDRimage(crop, putMedianIntensityAt=0.45, returnIntensityMultiplier=True, gamma=gamma)
         
@@ -149,8 +153,8 @@ class LavalIndoorDataset():
         return self.dataset_size
 
 
-def create_dataloader(opt):
-    dataset = LavalIndoorDataset(opt)
+def create_dataloader(opt, curr_index=0):
+    dataset = LavalIndoorDataset(opt, curr_index)
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=opt.batchSize,

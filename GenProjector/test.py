@@ -18,25 +18,27 @@ import util
 
 opt = TestOptions().parse()
 
-dataloader = data.create_dataloader(opt)
 
 model = Pix2PixModel(opt)
 model.eval()
-os.makedirs(opt.results_dir)
-for i, data_i in enumerate(dataloader):
-    if i * opt.batchSize >= 1000:
-        break
-    if i * opt.batchSize >= 0:
-        generated = model(data_i, mode='inference')
-        nm = data_i['name']
-        for b in range(generated.shape[0]):
-            # print('process image... %s' % nm[b])
+os.makedirs(opt.results_dir, exist_ok=True)
+for g in range(4, 10):
+    
+    dataloader = data.create_dataloader(opt, g)
+    for i, data_i in enumerate(dataloader):
+        if i * opt.batchSize >= 1000:
+            break
+        if i * opt.batchSize >= 0:
+            generated = model(data_i, mode='inference')
+            nm = data_i['name']
+            for b in range(generated.shape[0]):
+                # print('process image... %s' % nm[b])
 
-            images = OrderedDict([
-                                  ('input', data_i['input'][b]),
-                                  ('fake_image', generated[b]),
-                                  ('warped', data_i['warped'][b]),
-                                  ('im', data_i['crop'][b])])
+                images = OrderedDict([
+                                    ('input', data_i['input'][b]),
+                                    ('fake_image', generated[b]),
+                                    ('warped', data_i['warped'][b]),
+                                    ('im', data_i['crop'][b])])
 
-            util.save_test_images(images, nm[b], opt.results_dir)
-        print (i)
+                util.save_test_images(images, nm[b], opt.results_dir, suffix = '_' + str(g).zfill(2))
+            print (i)

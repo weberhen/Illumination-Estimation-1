@@ -153,38 +153,3 @@ for nm in nms:
             pickle.dump(para, handle, protocol=pickle.HIGHEST_PROTOCOL)
         i += 1
         print (i)
-
-        # dirs = util.sphere_points(ln)
-        # dirs = torch.from_numpy(dirs)
-        # dirs = dirs.view(1, ln*3).cuda().float()
-        #
-        # size = torch.ones((1, ln)).cuda().float() * 0.0025
-        # intensity = torch.from_numpy(np.array(para['intensity'])).float().cuda()
-        # intensity = intensity.view(1, 1, 1).repeat(1, ln, 3).cuda()
-        #
-        # rgb_ratio = torch.from_numpy(np.array(para['rgb_ratio'])).float().cuda()
-        # rgb_ratio = rgb_ratio.view(1, 1, 3).repeat(1, ln, 1).cuda()
-        #
-        # distribution = torch.from_numpy(para['distribution']).cuda().float()
-        # distribution = distribution.view(1, ln, 1).repeat(1, 1, 3)
-        #
-        # light_rec = distribution * intensity * rgb_ratio
-        # light_rec = light_rec.contiguous().view(1, ln*3)
-        #
-        # env = util.convert_to_panorama(dirs, size, light_rec)
-        # env = env.detach().cpu().numpy()[0]
-        # env = util.tonemapping(env) * 255.0
-        # im = np.transpose(env, (1, 2, 0))
-        # im = Image.fromarray(im.astype('uint8'))
-        #
-        # nm_ = nm.split('.')[0]
-        # im.save('./tmp/{}_rec.png'.format(nm_))
-        #
-        # gt = util.tonemapping(hdr) * 255.0
-        # gt = Image.fromarray(gt.astype('uint8'))
-        # gt.save('./tmp/{}_gt.png'.format(nm_))
-        #
-        # light = util.tonemapping(hdr) * 255.0 * map
-        # light = Image.fromarray(light.astype('uint8'))
-        # light.save('./tmp/{}_light.png'.format(nm_))
-        # print (1/0)

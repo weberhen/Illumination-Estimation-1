@@ -576,7 +576,7 @@ def save_current_images(visuals, epoch, step):
             tonemapping(image_numpy, img_path)
             # if label == 'warped' or 'fake_image':
 
-def save_test_images(visuals, nm, output_folder = './results/'):
+def save_test_images(visuals, nm, output_folder = './results/', suffix = ''):
     ## convert tensors to numpy arrays
     visuals = convert_visuals_to_numpy(visuals)
 
@@ -585,18 +585,18 @@ def save_test_images(visuals, nm, output_folder = './results/'):
 
         if label == 'fake_image':
             im = image_numpy
-            im_path = os.path.join(output_folder, nm + '_' + label + '.jpg')
+            im_path = os.path.join(output_folder, nm + '_' + label + suffix +'.jpg')
             tonemapping(im, im_path)
 
-            hdr_path = os.path.join(output_folder,  nm + '.exr')
+            hdr_path = os.path.join(output_folder,  nm + suffix + '.exr')
             write_exr(hdr_path, image_numpy)
 
         if label == 'warped':
             warped = image_numpy
-            im_path = os.path.join(output_folder,  nm + '_' + label + '.jpg')
+            im_path = os.path.join(output_folder,  nm + '_' + label + suffix + '.jpg')
             tonemapping(warped, im_path)
 
         if label == 'input':
-            im_path = os.path.join(output_folder,  nm + '_' + label + '.jpg')
+            im_path = os.path.join(output_folder,  nm + '_' + label + suffix + '.jpg')
             input = image_numpy[:,:,:] * 255.0
             tonemapping(input, im_path, percentile=99, max_mapping=0.99)

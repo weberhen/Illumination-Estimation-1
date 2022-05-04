@@ -22,7 +22,7 @@ h = PanoramaHandler()
 batch_size = 1
 
 save_dir = "./checkpoints"
-test_dir = '/root/datasets_ssd/LavalIndoor/1942x971/test/'
+test_dir = '' # useless param now
 hdr_train_dataset = data.ParameterDataset(test_dir)
 dataloader = DataLoader(hdr_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
