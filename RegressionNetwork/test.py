@@ -22,7 +22,7 @@ h = PanoramaHandler()
 batch_size = 1
 
 save_dir = "./checkpoints"
-test_dir = '/root/datasets_ssd/LavalIndoor/1942x971/test/'
+test_dir = '/root/datasets_raid/LavalIndoor/1942x971/train/'
 hdr_train_dataset = data.ParameterDataset(test_dir)
 dataloader = DataLoader(hdr_train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
@@ -31,7 +31,7 @@ device = torch.device("cpu")
 Model = DenseNet.DenseNet().to(device)
 load_weight = True
 if load_weight:
-    weigths = torch.load("latest_net.pth")
+    weigths = torch.load("checkpoints_RegressionNetwork/latest_net.pth")
     # remove module. from name
     weigths = dict([(k[7:], v) for k, v in weigths.items()])
     Model.load_state_dict(weigths)

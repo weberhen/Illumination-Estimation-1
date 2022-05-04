@@ -59,7 +59,7 @@ class LavalIndoorDataset():
     def __getitem__(self, index):
         # pick random index between 0 and 10
         # index = random.randint(0, 80)
-        ln = 42
+        ln = 96
         # read .exr image
         pkl_path, warped_path = self.pairs[index]
 

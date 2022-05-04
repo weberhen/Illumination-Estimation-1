@@ -21,8 +21,8 @@ class ParameterDataset(Dataset):
         self.pairs = []
 
         # gt_dir = train_dir + 'pkl/'
-        gt_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/'
-        crop_dir = '/root/datasets_ssd/LavalIndoor/crops_hdr/test/'
+        gt_dir = '/root/datasets_ssd/LavalIndoor/emlight/pkl/train/'
+        crop_dir = '/root/datasets_ssd/LavalIndoor/crops_hdr/train/'
 
         gt_nms = os.listdir(gt_dir)
         for nm in gt_nms:
