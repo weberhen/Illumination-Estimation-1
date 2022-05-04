@@ -40,15 +40,15 @@ class LavalIndoorDataset():
         return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
     def get_paths(self, opt):
-        dir = '/emlight/pkl/traub/'
+        dir = '/emlight/pkl_RegressionNetwork/'+opt.phase+'/'
         pkl_dir = opt.dataroot + dir
         pairs = []
-        nms = os.listdir(pkl_dir)
+        nms = sorted(os.listdir(pkl_dir))
 
         for nm in nms:
             if nm.endswith('.pickle'):
                 pkl_path = pkl_dir + nm
-                warped_path = pkl_path.replace(dir, '256x128/train/')
+                warped_path = pkl_path.replace(dir, '256x128/'+opt.phase+'/')
                 # warped_path = pkl_path.replace(dir, 'test/')
                 warped_path = warped_path.replace('pickle', 'exr')
                 # print (warped_path)
@@ -59,7 +59,7 @@ class LavalIndoorDataset():
     def __getitem__(self, index):
         # pick random index between 0 and 10
         # index = random.randint(0, 80)
-        ln = 42
+        ln = 96
         # read .exr image
         pkl_path, warped_path = self.pairs[index]
 

@@ -576,7 +576,7 @@ def save_current_images(visuals, epoch, step):
             tonemapping(image_numpy, img_path)
             # if label == 'warped' or 'fake_image':
 
-def save_test_images(visuals, nm):
+def save_test_images(visuals, nm, output_folder = './results/'):
     ## convert tensors to numpy arrays
     visuals = convert_visuals_to_numpy(visuals)
 
@@ -585,46 +585,18 @@ def save_test_images(visuals, nm):
 
         if label == 'fake_image':
             im = image_numpy
-            im_path = './results/' + nm + '_' + label + '.jpg'
+            im_path = os.path.join(output_folder, nm + '_' + label + '.jpg')
             tonemapping(im, im_path)
 
-            hdr_path = './results/' + nm + '_' + label + '.exr'
+            hdr_path = os.path.join(output_folder,  nm + '.exr')
             write_exr(hdr_path, image_numpy)
-
-            # rgb = image_numpy
-            # intensity = 0.3 * rgb[..., 0] + 0.59 * rgb[..., 1] + 0.11 * rgb[..., 2]
-            # im_path = './results/' + nm + '_' + label + '_intensity' + '.jpg'
-            # tonemapping(intensity, im_path, percentile=99.9, max_mapping=0.99)
 
         if label == 'warped':
             warped = image_numpy
-            im_path = './results/' + nm + '_' + label + '.jpg'
+            im_path = os.path.join(output_folder,  nm + '_' + label + '.jpg')
             tonemapping(warped, im_path)
 
-            # rgb = image_numpy
-            # intensity = 0.3 * rgb[..., 0] + 0.59 * rgb[..., 1] + 0.11 * rgb[..., 2]
-            # im_path = './results/' + nm + '_' + label + '_intensity' + '.jpg'
-            # tonemapping(intensity, im_path, percentile=99.9, max_mapping=0.99)
-
         if label == 'input':
-            im_path = './results/' + nm + '_' + label + '.jpg'
-            # print (image_numpy.shape)
-            # tonemapping(image_numpy[:,:,:3]
+            im_path = os.path.join(output_folder,  nm + '_' + label + '.jpg')
             input = image_numpy[:,:,:] * 255.0
             tonemapping(input, im_path, percentile=99, max_mapping=0.99)
-
-        # if label == 'im':
-        #     im_path = './results/' + nm + '_' + 'crop' + '.jpg'
-        #     crop = image_numpy
-        #     tonemapping(crop, im_path)
-
-
-
-        # if label == 'warped':
-        #     im_path = './results/' + nm + '_' + label + '.jpg'
-        #     tonemapping(image_numpy.copy(), im_path)
-        #
-        #     rgb = image_numpy
-        #     intensity = 0.3 * rgb[..., 0] + 0.59 * rgb[..., 1] + 0.11 * rgb[..., 2]
-        #     im_path = './results/' + nm + '_' + label + '_intensity' + '.jpg'
-        #     tonemapping(intensity, im_path, percentile=99.5, max_mapping=0.99)

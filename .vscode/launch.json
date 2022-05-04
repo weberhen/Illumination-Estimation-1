@@ -10,26 +10,27 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            // "args": [   
-            //     "--name", "lavalindoor",
-            //     "--dataset_mode", "lavalindoor",
-            //     "--dataroot", "/root/datasets_ssd/LavalIndoor/",
-            //     "--display_freq", "100",
-            //     "--batchSize", "4",
-            //     "--nThreads", "8",
-            //     "--niter", "5000",
-            //     "--niter_decay", "5000",
-            //     "--gpu_ids", "0",
-            //     "--continue_train",
-            //     // "--lr", "0.001",
-            // ] //train
-            "args": [   // TEXTURE NETWORK TEST
+            "args": [   
                 "--name", "lavalindoor",
-                "--checkpoints_dir", "checkpoints",
                 "--dataset_mode", "lavalindoor",
                 "--dataroot", "/root/datasets_ssd/LavalIndoor/",
-                "--which_epoch", "latest",
-                ] // test
+                "--display_freq", "100",
+                "--batchSize", "4",
+                "--nThreads", "8",
+                "--niter", "5000",
+                "--niter_decay", "5000",
+                "--gpu_ids", "0",
+                // "--continue_train",
+                "--lr", "0.001",
+            ] //train
+            // "args": [   // TEXTURE NETWORK TEST
+            //     "--name", "lavalindoor",
+            //     "--checkpoints_dir", "checkpoints",
+            //     "--dataset_mode", "lavalindoor",
+            //     "--dataroot", "/root/datasets_ssd/LavalIndoor/",
+            //     "--which_epoch", "700",
+            //     "--results_dir", "epooch_700",
+            //     ] // test
         }
     ]
 }

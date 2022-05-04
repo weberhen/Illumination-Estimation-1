@@ -113,8 +113,8 @@ def extractImage(envmap, viewing_angles, output_height, vfov=50, output_width=32
 
     return outimg
 
-input_folder = '/root/datasets_ssd/LavalIndoor/1942x971/test'
-output_folder = '/root/datasets_ssd/LavalIndoor/crops_hdr/test'
+input_folder = '/root/datasets_raid/LavalIndoor/1942x971/train'
+output_folder = '/root/datasets_ssd/LavalIndoor/crops_hdr/train'
 
 # list all .exr files in input_folder
 input_files = sorted([os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith('.exr')])
